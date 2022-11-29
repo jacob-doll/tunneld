@@ -5,6 +5,7 @@ use env_logger::Env;
 use log::{error, info};
 
 pub mod client;
+pub mod common;
 pub mod server;
 use crate::client::Client;
 use crate::server::Server;

@@ -941,6 +941,7 @@ dependencies = [
  "pnet",
  "pnet_macros_support",
  "pnet_transport",
+ "regex",
  "tun-tap",
 ]
 
