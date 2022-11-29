@@ -10,7 +10,6 @@ use std::{io, process::Command};
 use tun_tap::{Iface, Mode};
 
 pub struct Server {
-    running: bool,
     iface: Iface,
 }
 
@@ -33,15 +32,10 @@ impl Server {
         cmd("ip", &["addr", "add", "dev", iface.name(), subnet]);
         cmd("ip", &["link", "set", "up", "dev", iface.name()]);
 
-        Ok(Server {
-            running: false,
-            iface,
-        })
+        Ok(Server { iface })
     }
 
     pub fn start(&mut self) {
-        self.running = true;
-
         let protocol = Layer4(Ipv4(IpNextHeaderProtocols::Icmp));
 
         let (mut tx, mut rx) = match transport_channel(4096, protocol) {
@@ -57,7 +51,7 @@ impl Server {
 
         let mut iter = icmp_packet_iter(&mut rx);
 
-        while self.running {
+        loop {
             match iter.next() {
                 Ok((packet, addr)) => {
                     if packet.get_icmp_type() != IcmpTypes::EchoRequest {

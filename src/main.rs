@@ -4,7 +4,9 @@ use clap::{Parser, Subcommand};
 use env_logger::Env;
 use log::{error, info};
 
+pub mod client;
 pub mod server;
+use crate::client::Client;
 use crate::server::Server;
 
 #[derive(Parser)]
@@ -40,6 +42,13 @@ fn main() {
     match &cli.command {
         Some(Commands::Client { server }) => {
             info!("Client with server: {:?}", server);
+            match Client::new(cli.ifname.as_str(), server.as_str()) {
+                Ok(mut client) => client.start(),
+                Err(e) => {
+                    error!("Could not start client: {}", e);
+                    exit(1)
+                }
+            }
         }
         Some(Commands::Server { subnet }) => {
             info!("Server with subnet: {:?}", subnet);
